@@ -4,6 +4,9 @@ var socket = io.connect('http://127.0.0.1:5000/')
 socket.on('connect', function () {
     console.log('connected')
 })
+socket.on('disconnect', function(){
+    //socket.emit('disconnect')
+})
 
 
 $('#findGame').on('click', function(){
@@ -14,11 +17,9 @@ $('#findGame').on('click', function(){
     })
 })
 
-socket.on('disconnect-client', async function(gameID, clientGameID){
-    console.log(gameID)
-    console.log(clientGameID)
+socket.on('disconnect-client', function(gameID, clientGameID){
+    console.log(gameID,clientGameID)
     if(gameID == clientGameID){
-        console.log('true')
         socket.emit('disconnect-other-client', gameID)
     }
 })

@@ -47,13 +47,3 @@ def logout():
 @view.route('/register')
 def register():
   return render_template('register.html')
-
-@view.route('/getGameId')
-def getGameId():
-  print(session)
-  myGameId = session.get(GAMEKEY,None)
-
-  if myGameId != None:
-    return myGameId.gameID
-  else:
-    return 'None'

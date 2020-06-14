@@ -54,22 +54,37 @@ def searching():
         else:
             idCount -=1
             session.pop(GAMEKEY,None)
-        print(f'[DISCONNECT] {client_session} has disconnected')
+        print(f'[DISCONNECT] {client_session} has lost connection')
 
 @socketio.on('disconnect-other-client')
 def disconnect_client(gameID):
     global idCount
 
-    client = session.get(GAMEKEY,None)
-    print(f'[DISCONNECT] disconnecting {session[USERKEY]} printing session data {session}')
+    game = session.get(GAMEKEY,None)
+    print(f'[DISCONNECT] disconnecting {session[USERKEY]}')
 
-    if client.gameID == gameID:
-        idCount -= 1
-        session.pop(GAMEKEY,None)
-        session.pop(CLIENTGAMEKEY,None)
-
-
-
+    try:
+        if game.gameID == gameID:
+            idCount -= 1
+            session.pop(GAMEKEY,None)
+            if game in games:
+                games.pop(game)
+    except:
+        pass
+        
+@socketio.on('disconnect')
+def disconnect():
+    print(f'[CONNECTION ERROR] {session[USERKEY]} lost thread')
+    game = session.get(GAMEKEY,False)
+    user = session.get(CLIENTGAMEKEY,None)
+    print(game,user)
+    try:
+        if not game and games[game.gameID].ready:
+            session.pop(GAMEKEY,None)
+            games.pop(game)
+            socketio.emit('disconnect-client', (game.gameID, user.get('gameID',None)))
+    except:
+        pass
 
 if __name__ == '__main__':
     socketio.run(app,debug=True)
