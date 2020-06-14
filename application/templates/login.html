@@ -1,29 +1,20 @@
-{% extends "base.html" %}
-
-{% block title %}
-Login
-{% endblock %}
-
-{% block content %}
-<form>
+{% extends "base.html" %} {% block title %} Login {% endblock %} {% block content %}
+<!-- <form id="loginForm", method="POST">
+	<div class="form-group">
+		<label for"usernameInput">Username</label>
+    <input type ="text" class="form-control", name ="usernameInput", placeholder="Username"></input>
+  </div> -->
   <div class="form-group">
     <label for="exampleInputEmail1">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+    <input type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email">
     <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
   </div>
   <div class="form-group">
     <label for="exampleInputPassword1">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-  </div>
-  <div class="form-group form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+    <input type="password" class="form-control" name="passwordinput" placeholder="Password">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+<p>reigster <a href="/login" >Here</a> </p>
 
-<form action="#", method="POST">
-    <input type="text", name="username", id="username">
-    <button type="submit", name="submitName",id="submitName">submit-button</button>
-</form>
 {% endblock %}

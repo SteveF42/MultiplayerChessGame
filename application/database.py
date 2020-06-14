@@ -42,18 +42,11 @@ class Database:
       query = f'''INSERT INTO {TABLE} VALUES(?,?,?,?,?,?)'''
       self.cursor.execute(query,data)
   
-  def update_wins(self, user):
+  def update_wins(self,user):
     """
     type user: dictionary
     rtype: None
     """
-    # values_to_update = []
-    # for key in values.keys():
-    #   values_to_update.append(f'{key} = {values[key]} ')
-      
-    # string_from_vals = ' '.join(values_to_update)
-    # print('[UPDATING DB]',string_from_vals)
-    
 
     with self.conn:
       query = f"UPDATE {TABLE} SET wins = wins + 1 WHERE name =:name AND email =:email "
@@ -73,8 +66,8 @@ class Database:
     rtype bool
     '''
     with self.conn:
-      query = f'SELECT * FROM {TABLE} where name=:name AND email =:email AND password =:password'
-      self.cursor.execute(query,{'name':user['name'], 'email':user['email'], 'password':user['password']})
+      query = f'SELECT * FROM {TABLE} where email =:email AND password =:password'
+      self.cursor.execute(query,{'email':user['email'], 'password':user['password']})
 
     value = self.cursor.fetchall()
     return True if value else False
@@ -95,10 +88,11 @@ class Database:
 if __name__ == '__main__':
   c = Database()
   user = {
-    'name':'josh',
-    'email':'josh@gmail.com',
-    'password' : 'uhfera88'
+    'name':'steve',
+    'email':'steve@gmail.com',
+    'password' : 'password123'
   }
+
   print(c.get_user_info(user))
   print(c.validate_user(user))
   # vals = ['wins','losses']
