@@ -14,9 +14,11 @@ $('#findGame').on('click', function(){
     })
 })
 
-socket.on('disconnect-client', async function(gameID){
-    const myGameID = await fetch('/getGameId')
-    if(myGameId != null && myGameID == gameID){
+socket.on('disconnect-client', async function(gameID, clientGameID){
+    console.log(gameID)
+    console.log(clientGameID)
+    if(gameID == clientGameID){
+        console.log('true')
         socket.emit('disconnect-other-client', gameID)
     }
 })
