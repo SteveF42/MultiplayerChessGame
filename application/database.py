@@ -2,7 +2,7 @@ import sqlite3
 
 TABLE = 'users'
 
-def create_database_user(name=None,email=None,password=None):
+def create_database_user(email=None,password=None,name=None):
   Dictionary  = {'name':name, 'email':email,'password':password}
   return Dictionary 
   #return new dictionary that stores the user information
@@ -12,7 +12,7 @@ class Database:
     self.conn = sqlite3.connect('userInfo.db')
     self.conn.row_factory = self._row_facatory
     self.cursor = self.conn.cursor()
-    self.table=self._create_table()
+    self._create_table()
 
   def _row_facatory(self,cursor, row):
     d = {}
@@ -83,17 +83,24 @@ class Database:
     data = self.cursor.fetchone()
     return data
 
-
+  def get_all_users(self):
+    query = f'SELECT * FROM {TABLE}'
+    with self.conn:
+      self.cursor.execute(query)
+      ls = self.cursor.fetchall()
+      return ls
 
 if __name__ == '__main__':
   c = Database()
   user = {
-    'name':'steve',
-    'email':'steve@gmail.com',
+    'name':'josh',
+    'email':'josh@gmail.com',
     'password' : 'password123'
   }
-  print(c.get_user_info(user))
-  print(c.validate_user(user))
+  c.insert_new_user(user)
+  #print(c.get_user_info(user))
+  #print(c.validate_user(user))
+  print(c.get_all_users())
   # vals = ['wins','losses']
   # c.update_data(vals)
       
