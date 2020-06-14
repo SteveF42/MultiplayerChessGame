@@ -2,7 +2,7 @@ import sqlite3
 
 TABLE = 'users'
 
-def create_database_user(name,email,password):
+def create_database_user(name=None,email=None,password=None):
   Dictionary  = {'name':name, 'email':email,'password':password}
   return Dictionary 
   #return new dictionary that stores the user information
@@ -69,7 +69,7 @@ class Database:
       query = f'SELECT * FROM {TABLE} where email =:email AND password =:password'
       self.cursor.execute(query,{'email':user['email'], 'password':user['password']})
 
-    value = self.cursor.fetchall()
+    value = self.cursor.fetchone()
     return True if value else False
 
   def get_user_info(self, userInfo):
@@ -92,7 +92,6 @@ if __name__ == '__main__':
     'email':'steve@gmail.com',
     'password' : 'password123'
   }
-
   print(c.get_user_info(user))
   print(c.validate_user(user))
   # vals = ['wins','losses']

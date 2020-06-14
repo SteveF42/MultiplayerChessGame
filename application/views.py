@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for, session, Blueprint, flash
+from flask import Flask, render_template, redirect, request, url_for, session, Blueprint, flash, jsonify
 from application.database import Database, create_database_user
 
 view = Blueprint('views', __name__, static_folder='static')
@@ -21,8 +21,7 @@ def login():
     loginValues = request.form
     print(loginValues)
 
-    user = create_database_user(loginValues['usernameInput'],
-    loginValues['emailInput'],loginValues['passwordinput'])
+    user = create_database_user(loginValues['emailInput'],loginValues['passwordinput'])
 
     isValid = db.validate_user(user)
     print(isValid)
@@ -48,3 +47,12 @@ def logout():
 @view.route('/register')
 def register():
   return render_template('register.html')
+
+@view.route('/getGameId')
+def getGameId():
+  myGameId = session.get('game',None)
+
+  if myGameId != None:
+    return myGameId.gameID
+  else:
+    return None
