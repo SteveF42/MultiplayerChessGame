@@ -5,30 +5,32 @@ socket.on('connect', function () {
     console.log('connected')
 })
 
-socket.on('disconnect-client', function(gameID, clientGameID){
-    console.log(gameID,clientGameID)
-    if(gameID == clientGameID){
-        socket.emit('disconnect-other-client', gameID)
-    }
-})
-socket.on('client-game-setup',function(gameID,clientID){
-    console.log(gameID,clientID)
-    if(gameID === clientID){
-        socket.emit('start-game',gameID)
-    }
-})
-socket.on('disconnect',()=>{
-    socket.emit('disconnect-server-side')
+socket.on('client-game-setup', async function(gameID){
+    socket.emit('get-client-id')
+    socket.on('response',id=>{
+        let clientID = undefined
+        let name = "None"
+        if(id != undefined){
+            clientID = id['gameID']
+            name = id['name']
+        }
+
+        console.log(clientID,name)
+    })
+
 })
 
 
 window.onload = function(){
     socket.emit('stop-processes',function(){
-
     })
 }
 
-
+$('#sendAnswer').on('click', function(){
+    let answer = $('#sendAnswer').val()
+    $('#sendAnswer').val('')
+    socket.emit('move',answer)
+})
 
 $('#sendAnswer').on('click', function(){
     let move = $('#inputAnswer').val()

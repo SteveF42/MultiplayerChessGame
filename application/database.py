@@ -93,11 +93,11 @@ class Database:
 if __name__ == '__main__':
   c = Database()
   user = {
-    'name':'josh',
-    'email':'josh@gmail.com',
+    'name':'carl',
+    'email':'carl@gmail.com',
     'password' : 'password123'
   }
-  c.insert_new_user(user)
+  #c.insert_new_user(user)
   #print(c.get_user_info(user))
   #print(c.validate_user(user))
   print(c.get_all_users())

@@ -15,26 +15,34 @@ USERKEY = 'user'
 
 games = {}
 idCount = 0
-
-@socketio.on('start-game')
+@socketio.on('game-start')
 def handle_game(gameID):
     global idCount
-    currentGame = games[gameID]
+    game = games[gameID]
+    user = session[USERKEY]
+    if CLIENTGAMEKEY not in session:
+        return
 
-    while not currentGame.ready:
-        time.sleep(2.5)
-        print('searching for other player')
-        print(session)
+    while not game.ready:
         if CLIENTGAMEKEY not in session:
             break
-        
+        time.sleep(2.5)
+        print(f'{user} searching for other player')
 
-    while currentGame.ready:
+    
+    gameover = False
+    while games[gameID].ready and CLIENTGAMEKEY in session:
+        time.sleep(1)
         @socketio.on('move')
         def move(choice):
             print(choice)
+            if choice == 'DONE':
+                gameover = True
+        if gameover:
+            print('[GAMEOVER] SOMEONE LOST')
+            break;
         
-        if CLIENTGAMEKEY not in session or currentGame.quit:
+        if CLIENTGAMEKEY not in session or games[gameID].quit:
             break
     
     games.pop(gameID)
@@ -55,12 +63,10 @@ def gameTracker(name):
         print('[GAME] connection found! Game starting')
         playerNum = 1
         games[gameID].readyGame()
-
         
+         
     session[CLIENTGAMEKEY] = {'name':name,'gameID':gameID}
-    print(gameID,session[CLIENTGAMEKEY]['gameID'])
-    socketio.emit('client-game-setup',(gameID,session[CLIENTGAMEKEY]['gameID']))
-
+    socketio.emit('client-game-setup',(session[CLIENTGAMEKEY]['gameID']),brodcast=False)
     
     print(games)
     
@@ -79,46 +85,30 @@ def searching():
         gameTracker(client_session)
     else:
         session.pop(CLIENTGAMEKEY,None)
-    # else:
-    #     if games[game.gameID].ready:
-    #         print (user.get('gameID',None),game.gameID)
-    #         socketio.emit('disconnect-client', (game.gameID, user.get('gameID',None)))
-    #     else:
-    #         idCount -=1
-    #         session.pop(GAMEKEY,None)
-    #     print(f'[DISCONNECT] {client_session} has lost connection')
+    
+         
 
-@socketio.on('disconnect-other-client')
-def disconnect_client(gameID):
-    global idCount
-
-    game = session.get(CLIENTGAMEKEY,None)
-    print(f'[DISCONNECT] disconnecting {session[USERKEY]}')
-
-    try:
-        if game.gameID == gameID:
-            idCount -= 1
-            session.pop(CLIENTGAMEKEY,None)
-            if game in games:
-                games.pop(game)
-    except:
-        pass
-        
-@socketio.on('disconnect')
+@socketio.on('server-disconnect')
 def disconnect():
-    print(f'[CONNECTION ERROR] {session[USERKEY]} lost thread')
     try:
+        print(f'[CONNECTION ERROR] {session[USERKEY]} lost thread')
         session.pop(CLIENTGAMEKEY,None)
     except:
         pass
 
 @socketio.on('stop-processes')
 def stop_processes():
-    print('called')
-    print(session)
     if USERKEY in session:
-        session.pop(CLIENTGAMEKEY,None)
+        try:
+            session.pop(CLIENTGAMEKEY,None)
+        except:
+            pass
 
+@socketio.on('get-client-id')
+def get_user_id():
+    id = session.get(CLIENTGAMEKEY)
+    socketio.emit('response',id)
+    
 
 if __name__ == '__main__':
     socketio.run(app,debug=True)
