@@ -6,6 +6,7 @@ class Game:
         self.playermoves = [None,None]
         self.player1Went = False
         self.player2Went = False
+        self.quit = False
 
     def set_player_move(self,player,move):
         '''
@@ -29,6 +30,8 @@ class Game:
     def readyGame(self):
         self.ready = True
     
+    def quitGame(self):
+        self.quit = True
     
     def winner(self):
         '''
@@ -58,6 +61,5 @@ class Game:
     def reset(self):
         self.player1Went = False
         self.player1Went = False
-        self.ready = False
     
     
