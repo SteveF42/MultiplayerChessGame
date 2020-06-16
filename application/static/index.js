@@ -1,25 +1,32 @@
 var socket = io.connect('http://127.0.0.1:5000/')
+var private_socket = io('http://127.0.0.1:5000/private')
+var clientID = undefined
+var searching = true
 
+function HTML(msg){
+    let alert = 
+        `<p class="alert alert-success alert-dismissible ", style="margin: 10px 25% 0 25%;", id="flashed-message",value="true">
+        ${msg}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        </p>`
+        return alert
+}
 
 socket.on('connect', function () {
     console.log('connected')
 })
 
-socket.on('client-game-setup', async function(gameID){
-    socket.emit('get-client-id')
-    socket.on('response',id=>{
-        let clientID = undefined
-        let name = "None"
-        if(id != undefined){
-            clientID = id['gameID']
-            name = id['name']
-        }
+socket.on('client-game-setup', async function(sessionInfo){
+    console.log(sessionInfo)
+    let val = $('#flashed-message').val()
 
-        console.log(clientID,name)
-    })
-
+    $('#flashed-message').remove()
+    
+    $('#flash-message').append(HTML('Game Found!'))
+    
 })
-
 
 window.onload = function(){
     socket.emit('stop-processes',function(){
@@ -27,23 +34,29 @@ window.onload = function(){
 }
 
 $('#sendAnswer').on('click', function(){
-    let answer = $('#sendAnswer').val()
-    $('#sendAnswer').val('')
-    socket.emit('move',answer)
-})
-
-$('#sendAnswer').on('click', function(){
     let move = $('#inputAnswer').val()
     $('#inputAnswer').val('')
-    socket.emit('move',move)
+    socket.emit('game-info',move,callback=>{
+        console.log(callback)
+    })
 })
 
-
 $('#findGame').on('click', function(){
-    socket.emit('searching',function(callback){
-        if(callback != undefined){
-            window.location = callback
+    socket.emit('searching',function(url,boolValue){
+        if(url!=undefined)
+            window.location = url
+        else{
+            if(boolValue){
+                $('#findGame').text('Stop Searching')
+                $('#flash-message').append(HTML('Searching for game!'))
+                searching=false
+            }else{
+                $('#flashed-message').remove()
+                $('#findGame').text('Find Game')
+                searching=true
+            }
         }
     })
+
 })
 

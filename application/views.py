@@ -3,6 +3,7 @@ from flask_login import current_user
 from application.database import Database, create_database_user
 
 view = Blueprint('views', __name__, static_folder='static')
+from main import socketio
 
 USERKEY = 'user'
 
@@ -27,7 +28,6 @@ def login():
     print(isValid)
 
     if isValid:
-      print('valid user')
       session[USERKEY] = db.get_user_info(user)['name']
       return redirect(url_for('views.home'))
     else:
