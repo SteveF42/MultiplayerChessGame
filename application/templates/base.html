@@ -43,7 +43,12 @@
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for msg in messages %}
-          <p class="alert alert-danger", style="margin: 10px 25% 0 25%;">{{msg}}</p>
+          <p class="alert alert-danger alert-dismissible", style="margin: 10px 25% 0 25%;">
+            {{msg}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+          </p>
       {% endfor %}
     {% endif%}
   {% endwith%}

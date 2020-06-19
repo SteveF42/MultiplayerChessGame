@@ -6,7 +6,7 @@ from application import create_app
 import time
 
 app = create_app()
-socketio = SocketIO(app,ping_timeout=10,ping_interval=5)
+socketio = SocketIO(app,ping_timeout=10,ping_interval=7)
 
 CLIENTGAMEKEY = 'clientGameKey'
 USERKEY = 'user'
@@ -22,6 +22,7 @@ def room_message(msg):
     data = {'message':msg,'name':session.get(USERKEY)}
     
     socketio.emit('received-message',data,room=room)
+
 
 @socketio.on('game-info')
 def handle_game(msg):

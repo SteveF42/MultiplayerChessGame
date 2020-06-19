@@ -6,7 +6,7 @@ var in_game = false
 
 function HTML(msg){
     let alert = 
-        `<p class="alert alert-success alert-dismissible ", style="margin: 10px 25% 0 25%;", id="flashed-message",value="true">
+        `<p class="alert alert-success alert-dismissible", style="margin: 10px 25% 0 25%;", id="flashed-message",value="true">
         ${msg}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
@@ -14,11 +14,13 @@ function HTML(msg){
         </p>`
         return alert
 }
-
+//socket events
 socket.on('connect', function () {
     console.log('connected')
  
 })
+
+//after the other client disconnects, resets the server info and client info
 socket.on('force-end-game',function(name){
     console.log('other client disconnected')
     in_game=false
@@ -31,19 +33,19 @@ socket.on('force-end-game',function(name){
     item.style.display = "flex"
 
 })
-
+//sets up client to play game
 socket.on('client-game-setup', async function(sessionInfo){
     console.log(sessionInfo)
-    $('#flashed-message').remove()
     $('#flash-message').append(HTML('Game Found!'))
     let item = document.getElementById('hidden-message')
     item.style.display = "none"
     in_game = true
 
     $('#flashed-message').remove()
+    $('#flashed-message').remove()
     $('#findGame').text('Find Game')
 })
-
+//chat window 
 socket.on('received-message',msg=>{
     let tag = `<li style="margin-top:0; list-style: none" id="client-message">${msg['name']}: ${msg['message']}</li>`
     $('#game-messages').append(tag)
@@ -56,6 +58,9 @@ socket.on('received-message',msg=>{
 //     })
 // }
 
+
+//HTML events
+//searches for game
 $('#findGame').on('click', function(){
     socket.emit('searching',function(url,boolValue){
         if(url!=undefined)
@@ -73,6 +78,7 @@ $('#findGame').on('click', function(){
         }
     })
 })
+//send message event
 $('#send-friendly-message').on('click',function(){
     if(in_game===false){
         console.log('NOPE')

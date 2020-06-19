@@ -25,7 +25,7 @@ def login():
   if request.method == 'POST':
     loginValues = request.form
 
-    user = create_database_user(loginValues['emailInput'],loginValues['passwordinput'])
+    user = create_database_user(loginValues['emailInput'],loginValues['passwordInput'])
     isValid = db.validate_user(user)
     print(isValid)
 
