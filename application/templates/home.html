@@ -3,15 +3,122 @@
 
 
 {% block content %}
-<div class="flash">
-    <ul id='flash-message' style="list-style: none;"></ul>
-</div>
+<style>
+    .container {
+        margin-top: 50px;
+        border: solid;
+    }
+
+    .gameInfo {
+        grid-row: 1;
+        border: solid;
+        height: 100px;
+        margin: 45px 10%;
+    }
+
+    .chat-game-grid {
+        display: flex;
+        height: 60%;
+    }
+
+    .chatWindow {
+        border: solid;
+        height: 70%;
+        width: 300px;
+        margin-right: 3%;
+
+    }
+
+    .gameWindow {
+        margin: 0px 3% 5%;
+        border: solid;
+        width: 75%;
+
+    }
+
+    .hidden-message {
+        display: flex;
+        flex-direction: column;
+        display: show;
+        z-index: 1;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top:55px;
+        background-color: rgba(0, 0, 0, 0.486);
+        left: 0;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .message {
+        background-color: rgb(63, 54, 54);
+        border: solid;
+        height: auto;
+        width: 50%;
+        max-width: 500px;
+        margin-bottom: 55px;
+
+        padding: 25px;
+        display: flex;
+    }
+    .game-messages{
+        padding: 10px;
+        overflow-y: auto;
+        height: 90%;
+    }
+
+    .flash{
+        height: auto;
+        width: 100%;
+        max-width: 550px;
+        justify-content: left;
+    }
+</style>
+
 <form class="info" , id="registration">
-    <input type="text" id = "inputAnswer">
+    <!-- <input type="text" id = "inputAnswer">
     <button type="button" id ="sendAnswer">Send Answer</button>
     <button type="button" , id="findGame">Find Game
-    </button>
+    </button> -->
 </form>
+
+<div class="hidden-message", id="hidden-message">
+    <div class="flash">
+        <ul id='flash-message'></ul>
+    </div>
+    <div class="message">
+        <div class="inner-content">
+            <button type="button", id="findGame" class="btn btn-primary">Find Game</button>
+        </div>
+    </div>
+</div>
+<div class="container">
+
+    <div class="gameInfo">
+
+    </div>
+    <div class="chat-game-grid">
+        <div class="gameWindow" style="padding:10px 10px;">
+            <img src="" alt="">
+            <img src="" alt="">
+            <img src="" alt="">
+        </div>
+        <div class="chatWindow" style="padding: 10px;">
+            <div class="game-messages" id="game-messages">
+                <p>Hello </p>
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="friendly-message" style="background-color: rgba(0, 0, 0, 0.541); border-color:rgba(0, 0, 0, 0.541) ;">
+                <div class="input-group-prepend">
+                    <button type="button" id="send-friendly-message" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script src="{{url_for('static',filename='index.js')}}"></script>
 {% endblock %}

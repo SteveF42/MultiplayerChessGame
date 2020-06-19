@@ -1,20 +1,32 @@
-{% extends "base.html" %} {% block title %} Login {% endblock %} {% block content %}
- <form id="loginForm", method="POST">
-<!--	<div class="form-group">
-		<label for"usernameInput">Username</label>
-    <input type ="text" class="form-control", name ="usernameInput", placeholder="Username"></input>
-  </div> -->
-  <div class="form-group">
-    <label for="exampleInputEmail1">Email address</label>
-    <input type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email">
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-  </div>
-  <div class="form-group">
-    <label for="exampleInputPassword1">Password</label>
-    <input type="password" class="form-control" name="passwordinput" placeholder="Password">
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-<p>reigster <a href="/login" >Here</a> </p>
+{% extends "base.html" %} 
+{% block title %} Login {% endblock %} 
+
+
+
+{% block content %}
+  {% if user == None %}
+    <form id="loginForm", method="POST" style="padding: 30px 25% 25%;">
+      <!--	<div class="form-group">
+        <label for"usernameInput">Username</label>
+        <input type ="text" class="form-control", name ="usernameInput", placeholder="Username"></input>
+      </div> -->
+      <div class="form-group mb-3">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" name="passwordinput" placeholder="Password">
+      </div>
+      <div style="display: inline-flex;">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <p style="padding-top: 10px; padding-left: 10px;" > reigster <a href="/login" >Here</a> </p>
+      </div>
+    </form>
+  {% else %}
+    <p> {{context}}logout <a href="/logout"> Here </a> </p>
+
+{% endif%}
 
 {% endblock %}

@@ -10,19 +10,21 @@ USERKEY = 'user'
 @view.route('/')
 @view.route('/home')
 def home():
+  if USERKEY not in session:
+    flash('Please log in','alert')
+    return redirect(url_for('views.login'))
   return render_template('home.html')
 
 
 @view.route('/login', methods=['POST', 'GET'])
 def login():
 
-  if USERKEY in session:
-      redirect(url_for('views.home'))
   db = Database()
+  current_user = session.get(USERKEY,None)
   
   if request.method == 'POST':
     loginValues = request.form
-    
+
     user = create_database_user(loginValues['emailInput'],loginValues['passwordinput'])
     isValid = db.validate_user(user)
     print(isValid)
@@ -32,8 +34,9 @@ def login():
       return redirect(url_for('views.home'))
     else:
       flash('Invalid email/password')
-  
-  return render_template('login.html')
+      return redirect(url_for('views.login',user=current_user))
+
+  return render_template('login.html',user=current_user)
 
 @view.route('/logout')
 def logout():
@@ -42,7 +45,7 @@ def logout():
       session.pop(USERKEY, None)
   except:
       pass
-  return redirect(url_for('views.home'))
+  return redirect(url_for('views.login'))
 
 @view.route('/register')
 def register():

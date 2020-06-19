@@ -1,7 +1,8 @@
 var socket = io.connect('http://127.0.0.1:5000/')
 var private_socket = io('http://127.0.0.1:5000/private')
+
 var clientID = undefined
-var searching = true
+var in_game = false
 
 function HTML(msg){
     let alert = 
@@ -18,28 +19,26 @@ socket.on('connect', function () {
     console.log('connected')
 })
 
+
 socket.on('client-game-setup', async function(sessionInfo){
     console.log(sessionInfo)
-    let val = $('#flashed-message').val()
-
     $('#flashed-message').remove()
-    
     $('#flash-message').append(HTML('Game Found!'))
-    
+    let item = document.getElementById('hidden-message')
+    item.style.display = "none"
+    in_game = true
+})
+
+socket.on('received-message',msg=>{
+    console.log(msg)
+    let tag = `<p>${msg['name']}: ${msg['message']}</p>`
+    $('#game-messages').append(tag)
 })
 
 window.onload = function(){
     socket.emit('stop-processes',function(){
     })
 }
-
-$('#sendAnswer').on('click', function(){
-    let move = $('#inputAnswer').val()
-    $('#inputAnswer').val('')
-    socket.emit('game-info',move,callback=>{
-        console.log(callback)
-    })
-})
 
 $('#findGame').on('click', function(){
     socket.emit('searching',function(url,boolValue){
@@ -57,6 +56,20 @@ $('#findGame').on('click', function(){
             }
         }
     })
+})
+$('#send-friendly-message').on('click',function(){
+    if(in_game===false){
+        console.log('NOPE')
+        return
+    }
 
+    let msg = $('#friendly-message').val()
+    $('#friendly-message').val('')
+    if(msg.length < 1 || msg == undefined){
+        console.log("NOPE")
+        return
+    }
+    console.log(msg)
+    socket.emit('room-message',msg)
 })
 

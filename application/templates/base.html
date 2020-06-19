@@ -11,10 +11,17 @@
         {% block title %}
         {% endblock %}
     </title>
+    <style>
+      body{
+        background-image:linear-gradient(to top right,#151D21,#1d313b) ;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+    </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Navbar</a>
+  <nav class="navbar navbar-expand-lg navbar-light" style="background-color:#488caf;">
+  <a class="navbar-brand" href="/home">Ro-Sham-Bo</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -29,12 +36,17 @@
       <li class="nav-item">
         <a class="nav-link" href="#">Search Game</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
     </ul>
   </div>
 </nav>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}
+          <p class="alert alert-danger", style="margin: 10px 25% 0 25%;">{{msg}}</p>
+      {% endfor %}
+    {% endif%}
+  {% endwith%}
   {% block content %}
   {% endblock %}
 </body>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for, session, flash
+from flask import Flask, render_template, redirect, request, url_for, jsonify,session, flash
 from flask_socketio import SocketIO, join_room, leave_room
 from user import User
 from game import Game
@@ -15,6 +15,14 @@ games = {}
 user_games = {}
 idCount = 0
 
+@socketio.on('room-message')
+def room_message(msg):
+    print(msg)
+    room = session.get(CLIENTGAMEKEY)['gameID']
+    data = {'message':msg,'name':session.get(USERKEY)}
+    
+    socketio.emit('received-message',data,room=room)
+
 @socketio.on('game-info')
 def handle_game(msg):
     print(msg)
@@ -30,7 +38,7 @@ def gameTracker(name):
 
     session[CLIENTGAMEKEY] = {'name':name,'gameID':gameID,'sid':request.sid}
     join_room(gameID)
-
+    
     if idCount % 2 == 1:
         print('[GAME] new game, searching for other connection')
         games[gameID] = Game(gameID)
@@ -42,7 +50,6 @@ def gameTracker(name):
         games[gameID].players[1] = request.sid  
         socketio.emit('client-game-setup',(session[CLIENTGAMEKEY]), room=gameID)
    
-
     #socketio.emit('client-game-setup',(session[CLIENTGAMEKEY]['gameID']))
     
     print(games)
@@ -88,7 +95,7 @@ def stop_processes():
 @socketio.on('get-client-id',namespace='/private')
 def get_user_id():
     id = session.get(CLIENTGAMEKEY)
-    socketio.emit('response',id)
+    return request.sid
 
 
 
