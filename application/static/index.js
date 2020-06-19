@@ -31,7 +31,7 @@ socket.on('client-game-setup', async function(sessionInfo){
 
 socket.on('received-message',msg=>{
     console.log(msg)
-    let tag = `<p>${msg['name']}: ${msg['message']}</p>`
+    let tag = `<li style="margin-top:0; list-style: none">${msg['name']}: ${msg['message']}</li>`
     $('#game-messages').append(tag)
 })
 

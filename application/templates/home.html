@@ -104,14 +104,14 @@
             <img src="" alt="">
             <img src="" alt="">
         </div>
-        <div class="chatWindow" style="padding: 10px;">
-            <div class="game-messages" id="game-messages">
-                <p>Hello </p>
-            </div>
-            <div class="input-group mb-3">
+        <div class="chatWindow" style="padding: 10px;padding-bottom:0; display: flex; flex-direction: column;">
+            <ul class="game-messages" id="game-messages">
+                <!-- Messages get inserted here through javascript -->
+            </ul>
+            <div class="input-group mb-3" >
                 <input type="text" class="form-control" id="friendly-message" style="background-color: rgba(0, 0, 0, 0.541); border-color:rgba(0, 0, 0, 0.541) ;">
                 <div class="input-group-prepend">
-                    <button type="button" id="send-friendly-message" class="btn btn-primary">Send</button>
+                    <button type="button" id="send-friendly-message" class="btn btn-primary" style="flex:1;">Send</button>
                 </div>
             </div>
         </div>
