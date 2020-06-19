@@ -17,8 +17,20 @@ function HTML(msg){
 
 socket.on('connect', function () {
     console.log('connected')
+ 
 })
+socket.on('force-end-game',function(name){
+    console.log('other client disconnected')
+    in_game=false
+    
+    let tag = `<li style="margin-top:0; list-style: none" id="client-message">${name} has disconected... </li>`
+    $('#game-messages').append(tag)
 
+    socket.emit('pop-gamekey')
+    let item = document.getElementById('hidden-message')
+    item.style.display = "flex"
+
+})
 
 socket.on('client-game-setup', async function(sessionInfo){
     console.log(sessionInfo)
@@ -27,18 +39,22 @@ socket.on('client-game-setup', async function(sessionInfo){
     let item = document.getElementById('hidden-message')
     item.style.display = "none"
     in_game = true
+
+    $('#flashed-message').remove()
+    $('#findGame').text('Find Game')
 })
 
 socket.on('received-message',msg=>{
-    console.log(msg)
-    let tag = `<li style="margin-top:0; list-style: none">${msg['name']}: ${msg['message']}</li>`
+    let tag = `<li style="margin-top:0; list-style: none" id="client-message">${msg['name']}: ${msg['message']}</li>`
     $('#game-messages').append(tag)
 })
 
-window.onload = function(){
-    socket.emit('stop-processes',function(){
-    })
-}
+
+
+// window.onload = function(){
+//     socket.emit('stop-processes',function(){
+//     })
+// }
 
 $('#findGame').on('click', function(){
     socket.emit('searching',function(url,boolValue){
@@ -69,7 +85,6 @@ $('#send-friendly-message').on('click',function(){
         console.log("NOPE")
         return
     }
-    console.log(msg)
     socket.emit('room-message',msg)
 })
 

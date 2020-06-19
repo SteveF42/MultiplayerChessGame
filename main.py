@@ -6,7 +6,7 @@ from application import create_app
 import time
 
 app = create_app()
-socketio = SocketIO(app)
+socketio = SocketIO(app,ping_timeout=10,ping_interval=5)
 
 CLIENTGAMEKEY = 'clientGameKey'
 USERKEY = 'user'
@@ -76,15 +76,22 @@ def searching():
     
          
 
-@socketio.on('server-disconnect')
+@socketio.on('disconnect')
 def disconnect():
     try:
         print(f'[CONNECTION ERROR] {session[USERKEY]} lost thread')
+        info = session.get(CLIENTGAMEKEY,None)
+
+        if info:
+            gameID = info['gameID']
+            if gameID in games:
+                games.pop(gameID)
+                socketio.emit('force-end-game',session[USERKEY],room=gameID)                
         session.pop(CLIENTGAMEKEY,None)
     except:
         pass
 
-@socketio.on('stop-processes')
+@socketio.on('pop-gamekey')
 def stop_processes():
     if USERKEY in session:
         try:
