@@ -25,19 +25,19 @@ def room_message(msg):
     socketio.emit('received-message',data,room=room)
 
 
-@socketio.on('game-choice')
-def game_choice(choice):
+@socketio.on('play-game')
+def game_choice(move):
     gameID = session[CLIENTGAMEKEY]['gameID']
     playerNum = session[CLIENTGAMEKEY]['playerNum']
     game = games[gameID]
 
-    if game.player1Went:
-        pass
-    elif game.player2Went:
-        pass
-    elif game.player1Went and game.player2Went:
-        pass
+    game.set_player_move(playerNum,move)
 
+    if game.both_players_went():
+        winner = game.winner()
+        socketio.emit('winner',winner,room=gameID)
+    else:
+        socketio.emit('player-choice',room=gameID)
 
 @socketio.on('game-info')
 def handle_game(msg):
@@ -124,10 +124,14 @@ def stop_processes():
         except:
             pass
 
-@socketio.on('get-client-id',namespace='/private')
+@socketio.on('get_player_num')
 def get_user_id():
-    id = session.get(CLIENTGAMEKEY)
-    return request.sid
+    if not session[USERKEY]:
+        return
+
+    playerNum = session[CLIENTGAMEKEY]['playerNum']
+    print(playerNum)
+    return playerNum
 
 
 

@@ -1,10 +1,10 @@
 var socket = io('http://127.0.0.1:5000/')
 var private_socket = io('http://127.0.0.1:5000/private')
 
-var clientID = undefined
+var playerNum = undefined
 var in_game = false
 
-function HTML(msg,type) {
+function HTML(msg, type) {
     let alert =
         `<p class="alert alert-${type} alert-dismissible", style="margin: 10px 25% 0 25%;", id="flashed-message",value="true">
         ${msg}
@@ -37,7 +37,7 @@ socket.on('force-end-game', function (name) {
 //sets up client to play game
 socket.on('client-game-setup', async function (playerNames) {
 
-    $('#flash-message').append(HTML('Game Found!','success'))
+    $('#flash-message').append(HTML('Game Found!', 'danger'))
     let item = document.getElementById('hidden-message')
     item.style.display = "none"
     in_game = true
@@ -50,9 +50,17 @@ socket.on('client-game-setup', async function (playerNames) {
 
     let p1_name = playerNames[0]
     let p2_name = playerNames[1]
+
     document.getElementById('player1').innerHTML = p1_name
     document.getElementById('player2').innerHTML = p2_name
+
+    socket.emit('get_player_num', response=> playerNum = response)
 })
+
+socket.on('player-choice', function () {
+    
+})
+
 //chat window 
 socket.on('received-message', msg => {
     let tag = `<li style="margin-top:0; list-style: none" id="client-message">${msg['name']}: ${msg['message']}</li>`
@@ -75,7 +83,7 @@ $('#findGame').on('click', function () {
         else {
             if (boolValue) {
                 $('#findGame').text('Stop Searching')
-                $('#flash-message').append(HTML('Searching for game!'),'success')
+                $('#flash-message').append(HTML('Searching for game!', 'success'))
                 searching = false
             } else {
                 $('#flashed-message').remove()
@@ -85,6 +93,7 @@ $('#findGame').on('click', function () {
         }
     })
 })
+
 //send message event
 $('#send-friendly-message').on('click', function () {
     if (in_game === false) {
@@ -109,7 +118,6 @@ window.onload = async function () {
     ]
 
     let num = Math.floor(Math.random() * arr.length)
-    console.log(num)
     document.getElementById('player1_avatar').src = arr[num]
 
     num = Math.floor(Math.random() * arr.length)
@@ -120,45 +128,47 @@ window.onload = async function () {
 let current_choice = 0
 let locked_in = false
 $('#rock').on('click', function () {
-    if(locked_in)
+    if (locked_in)
         return
-        
+
     document.getElementById('rock').style.backgroundColor = 'rgb(71, 241, 65)'
     document.getElementById('paper').style.backgroundColor = 'rgb(0,0,0,0)'
     document.getElementById('scissors').style.backgroundColor = 'rgb(0,0,0,0)'
-    current_choice = 1
+    current_choice = 'rock'
 })
 
 $('#paper').on('click', function () {
-    if(locked_in)
+    if (locked_in)
         return
 
     document.getElementById('rock').style.backgroundColor = 'rgb(0,0,0,0)'
     document.getElementById('paper').style.backgroundColor = 'rgb(71, 241, 65)'
     document.getElementById('scissors').style.backgroundColor = 'rgb(0,0,0,0)'
-    current_choice = 2
+    current_choice = 'paper'
 })
 
 $('#scissors').on('click', function () {
-    if(locked_in)
+    if (locked_in)
         return
 
     document.getElementById('rock').style.backgroundColor = 'rgb(0,0,0,0)'
     document.getElementById('paper').style.backgroundColor = 'rgb(0,0,0,0)'
     document.getElementById('scissors').style.backgroundColor = 'rgb(71, 241, 65)'
-    current_choice = 3
+    current_choice = 'scissors'
 })
 
-$('#lock-in-choice').on('click',function(){
-    if(current_choice === 0){
+$('#lock-in-choice').on('click', function () {
+    if (current_choice === 0) {
         $('#flashed-message').remove()
-        let s = HTML('select a choice','danger')
+        let s = HTML('select a choice', 'danger')
         $('#error').append(s)
         return
     }
     $('#flashed-message').remove()
 
-    document.getElementById('lock-in-choice').setAttribute('disabled','disabled')
+    document.getElementById('lock-in-choice').setAttribute('disabled', 'disabled')
     document.getElementById('lock-in-choice').innerHTML = "WAITING FOR OPPONENT"
-    locked_in=true
+    locked_in = true
+
+    socket.emit('play-game', current_choice)
 })
