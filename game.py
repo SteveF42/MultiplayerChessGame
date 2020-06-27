@@ -1,6 +1,7 @@
 class Game:
     def __init__(self, gameId):
         self.players = [0,1]
+        self.playerNames = [None,None]
         self.ready = False
         self.id = gameId
         self.playermoves = [None,None]

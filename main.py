@@ -6,7 +6,7 @@ from application import create_app
 import time
 
 app = create_app()
-socketio = SocketIO(app,ping_timeout=10,ping_interval=7)
+socketio = SocketIO(app,ping_timeout=20,ping_interval=10)
 
 CLIENTGAMEKEY = 'clientGameKey'
 USERKEY = 'user'
@@ -15,6 +15,7 @@ games = {}
 user_games = {}
 idCount = 0
 
+#when game is in play these are used
 @socketio.on('room-message')
 def room_message(msg):
     print(msg)
@@ -22,6 +23,20 @@ def room_message(msg):
     data = {'message':msg,'name':session.get(USERKEY)}
     
     socketio.emit('received-message',data,room=room)
+
+
+@socketio.on('game-choice')
+def game_choice(choice):
+    gameID = session[CLIENTGAMEKEY]['gameID']
+    playerNum = session[CLIENTGAMEKEY]['playerNum']
+    game = games[gameID]
+
+    if game.player1Went:
+        pass
+    elif game.player2Went:
+        pass
+    elif game.player1Went and game.player2Went:
+        pass
 
 
 @socketio.on('game-info')
@@ -37,24 +52,31 @@ def gameTracker(name):
     idCount += 1
     gameID = (idCount-1)//2
 
-    session[CLIENTGAMEKEY] = {'name':name,'gameID':gameID,'sid':request.sid}
     join_room(gameID)
     
     if idCount % 2 == 1:
+        session[CLIENTGAMEKEY] = {'name':name,'gameID':gameID,'playerNum':1}
         print('[GAME] new game, searching for other connection')
-        games[gameID] = Game(gameID)
+
+        game = Game(gameID)
+        game.playerNames[0] = name;
+        games[gameID] = game
         games[gameID].players[0] = request.sid
+
 
     else:
         print('[GAME] connection found! Game starting')
+
+        session[CLIENTGAMEKEY] = {'name':name,'gameID':gameID,'playerNum':2}
+        games[gameID].playerNames[1] = name
         games[gameID].readyGame()
         games[gameID].players[1] = request.sid  
-        socketio.emit('client-game-setup',(session[CLIENTGAMEKEY]), room=gameID)
+        socketio.emit('client-game-setup',games[gameID].playerNames, room=gameID)
    
     #socketio.emit('client-game-setup',(session[CLIENTGAMEKEY]['gameID']))
-    
     print(games)
     
+
 
 @socketio.on('searching')
 def searching():
@@ -91,6 +113,8 @@ def disconnect():
         session.pop(CLIENTGAMEKEY,None)
     except:
         pass
+
+
 
 @socketio.on('pop-gamekey')
 def stop_processes():

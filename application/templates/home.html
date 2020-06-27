@@ -26,6 +26,7 @@
         height: 70%;
         width: 300px;
         margin-right: 3%;
+        background-color: rgb(87, 36, 46);
 
     }
 
@@ -38,6 +39,8 @@
 
     .hidden-message {
         display: flex;
+        /* UNCOMMENT THIS OUT TO APPLY BACKGROUD IMAGE AGAIN */
+        display: none;
         flex-direction: column;
         display: show;
         z-index: 1;
@@ -91,6 +94,8 @@
     .player_choice {
         margin-top: 150px;
         display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .player-info img {
@@ -115,23 +120,26 @@
         border: solid;
         border-radius: 50%;
         margin-bottom: 10px;
+        
         padding: 5px;
         border-color: black;
     }
 
     .group {
-        margin: 0 50px;
         display: flex;
         flex-direction: column;
+        margin: 0 25px
     }
 
     .choice:focus {
         outline: none;
+        
     }
 
     .choice:hover {
         background-color: rgb(71, 241, 65);
     }
+    
 
 </style>
 
@@ -162,20 +170,18 @@
     <div class="chat-game-grid">
         <div class="gameWindow" style="padding:10px 10px;">
             <div class='player-info'>
-
                 <content class="player">
-                    <label for="player1_avatar">steve</label>
+                    <label for="player1_avatar" id="player1"></label>
                     <img src="" alt="player avatar" id="player1_avatar">
                 </content>
 
                 <content class="player">
-                    <label for="player2_avatar">josh</label>
+                    <label for="player2_avatar" id="player2"></label>
                     <img src="" alt="player avatar" id="player2_avatar">
                 </content>
-
             </div>
-            <div class="player_choice">
 
+            <div class="player_choice">
                 <div class="group">
                     <button type="button" class='choice' id="rock"><img
                             src="{{url_for('static',filename='images/rock.png')}}" alt="rock" height="100"
@@ -197,9 +203,11 @@
                             width="100"></button>
                     <label for="scissors">SCISSORS</label>
                 </div>
-
             </div>
-
+            <div class='submit-player-choice' style="padding: 0 125px; margin-top:50px">
+                <p id="error"></p>
+                <button class="btn btn-success btn-lg btn-block" id="lock-in-choice">SUBMIT</button>
+            </div>
         </div>
         <div class="chatWindow" style="padding: 10px;padding-bottom:0; display: flex; flex-direction: column;">
             <ul class="game-messages" id="game-messages">
