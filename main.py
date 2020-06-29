@@ -18,7 +18,6 @@ idCount = 0
 #when game is in play these are used
 @socketio.on('room-message')
 def room_message(msg):
-    print(msg)
     room = session.get(CLIENTGAMEKEY)['gameID']
     data = {'message':msg,'name':session.get(USERKEY)}
     
@@ -31,13 +30,15 @@ def game_choice(move):
     playerNum = session[CLIENTGAMEKEY]['playerNum']
     game = games[gameID]
 
-    game.set_player_move(playerNum,move)
+    game.set_player_move(playerNum-1,move)
 
     if game.both_players_went():
         winner = game.winner()
+        print(winner)
         socketio.emit('winner',winner,room=gameID)
     else:
-        socketio.emit('player-choice',room=gameID)
+        socketio.emit('player-choice',playerNum,room=gameID)
+
 
 @socketio.on('game-info')
 def handle_game(msg):
@@ -75,7 +76,6 @@ def gameTracker(name):
    
     #socketio.emit('client-game-setup',(session[CLIENTGAMEKEY]['gameID']))
     print(games)
-    
 
 
 @socketio.on('searching')
@@ -83,7 +83,6 @@ def searching():
     global idCount
     client_session = session.get(USERKEY,None)
     user = session.get(CLIENTGAMEKEY,None)
-    print(client_session,request.sid)
 
     if client_session == None: 
         return url_for('views.login')
@@ -96,7 +95,6 @@ def searching():
         leave_room(session[CLIENTGAMEKEY]['gameID'])
         session.pop(CLIENTGAMEKEY,None)
         return (None,False)
-    
          
 
 @socketio.on('disconnect')
@@ -115,7 +113,6 @@ def disconnect():
         pass
 
 
-
 @socketio.on('pop-gamekey')
 def stop_processes():
     if USERKEY in session:
@@ -130,11 +127,7 @@ def get_user_id():
         return
 
     playerNum = session[CLIENTGAMEKEY]['playerNum']
-    print(playerNum)
     return playerNum
-
-
 
 if __name__ == '__main__':
     socketio.run(app,debug=True)
-

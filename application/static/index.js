@@ -57,8 +57,15 @@ socket.on('client-game-setup', async function (playerNames) {
     socket.emit('get_player_num', response=> playerNum = response)
 })
 
-socket.on('player-choice', function () {
-    
+//gets called after one player makes a move
+socket.on('player-choice', function (ID) {
+    console.log('INCOMING ID',ID,'PLAYERID',playerNum)
+    let otherPlayerID = ID === 1 ? 'player1_avatar' : 'player2_avatar'
+    document.getElementById(otherPlayerID).style.backgroundColor = 'rgb(71, 241, 65)'
+})
+//gets called after both players make moves
+socket.on('winner', function(winner){
+    console.log(winner)
 })
 
 //chat window 
