@@ -1,5 +1,9 @@
 import sqlite3
+import hashlib
+import os
 
+
+salt = os.urandom(32)
 TABLE = 'users'
 
 def create_database_user(email=None,password=None,name=None):
@@ -34,14 +38,38 @@ class Database:
 
   def insert_new_user(self, user):
     '''
-    type user: disctionary
+    type user: dictionary
     rtype: None
     '''
-    data = (user['name'],user['email'],user['password'],0,0,None)
+    password = self._hash_password(user['password'])
+    data = (user['name'],user['email'],password,0,0,None)
+      
     with self.conn:
       query = f'''INSERT INTO {TABLE} VALUES(?,?,?,?,?,?)'''
       self.cursor.execute(query,data)
   
+  def _hash_password(self,password):
+    '''
+    type password: str
+    rtype: str
+    '''
+    key = hashlib.pbkdf2_hmac('sha256',bytes(password,'utf-8'),salt,100000)
+    return key
+
+  def check_existing_users(self,name,email):
+    '''
+    type name: str
+    type email: str
+    rtype bool
+    '''
+    with self.conn:
+      query = f'SELECT * FROM {TABLE} WHERE name=:name or email=:email'
+      self.cursor.execute(query,{'name':name,'email':email})
+      values = self.cursor.fetchall()
+      if values:
+        return True
+    return False
+
   def update_wins(self,user):
     """
     type user: dictionary
@@ -65,9 +93,11 @@ class Database:
     type user: Dict
     rtype bool
     '''
+    password=self._hash_password(user['password'])
+
     with self.conn:
       query = f'SELECT * FROM {TABLE} where email =:email AND password =:password'
-      self.cursor.execute(query,{'email':user['email'], 'password':user['password']})
+      self.cursor.execute(query,{'email':user['email'], 'password':password})
 
     value = self.cursor.fetchone()
     return True if value else False
@@ -89,6 +119,11 @@ class Database:
       self.cursor.execute(query)
       ls = self.cursor.fetchall()
       return ls
+  
+  def remove_user(self,email):
+    with self.conn:
+      query = f"DELETE FROM {TABLE} WHERE email=:email"
+      self.cursor.execute(query,{'email':email})
 
 if __name__ == '__main__':
   c = Database()
@@ -97,10 +132,13 @@ if __name__ == '__main__':
     'email':'carl@gmail.com',
     'password' : 'password123'
   }
+  #c.remove_user('stevewflores43@gmail.com')
   #c.insert_new_user(user)
   #print(c.get_user_info(user))
   #print(c.validate_user(user))
-  print(c.get_all_users())
+  import pprint
+  pprint.pprint(c.get_all_users())
+  # print(c.get_all_users())
   # vals = ['wins','losses']
   # c.update_data(vals)
       
