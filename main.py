@@ -35,9 +35,9 @@ def game_choice(move):
     if game.both_players_went():
         winner = game.winner()
         print(winner)
-        socketio.emit('winner',winner,room=gameID)
+        socketio.emit('player-choice',(playerNum,winner),room=gameID)
     else:
-        socketio.emit('player-choice',playerNum,room=gameID)
+        socketio.emit('player-choice',(playerNum,None),room=gameID)
 
 
 @socketio.on('game-info')

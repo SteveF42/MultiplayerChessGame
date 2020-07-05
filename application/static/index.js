@@ -20,6 +20,7 @@ socket.on('connect', function () {
 
 })
 
+
 //after the other client disconnects, resets the server info and client info
 socket.on('force-end-game', function (name) {
     console.log('other client disconnected')
@@ -33,6 +34,7 @@ socket.on('force-end-game', function (name) {
     item.style.display = "flex"
 
 })
+
 
 //sets up client to play game
 socket.on('client-game-setup', async function (playerNames) {
@@ -57,15 +59,26 @@ socket.on('client-game-setup', async function (playerNames) {
     socket.emit('get_player_num', response=> playerNum = response)
 })
 
-//gets called after one player makes a move
-socket.on('player-choice', function (ID) {
-    console.log('INCOMING ID',ID,'PLAYERID',playerNum)
+
+//gets called after one player makes a move checks if theres a win or not too 
+socket.on('player-choice', function (ID,winner) {
     let otherPlayerID = ID === 1 ? 'player1_avatar' : 'player2_avatar'
     document.getElementById(otherPlayerID).style.backgroundColor = 'rgb(71, 241, 65)'
-})
-//gets called after both players make moves
-socket.on('winner', function(winner){
-    console.log(winner)
+
+    if(winner){
+        console.log("winner",winner)
+        switch(winner){
+            case 1:
+                console.log('PLAYER 1 WINS')
+                break;
+            case 2:
+                console.log('PLAYER 2 WINS')
+                break;
+            case 3:
+                console.log('ITS A TIE')
+                break;  
+        }
+    }
 })
 
 //chat window 
@@ -74,11 +87,11 @@ socket.on('received-message', msg => {
     $('#game-messages').append(tag)
 })
 
-
 // window.onload = function(){
 //     socket.emit('stop-processes',function(){
 //     })
 // }
+
 
 
 //HTML events
@@ -117,6 +130,7 @@ $('#send-friendly-message').on('click', function () {
     socket.emit('room-message', msg)
 })
 
+//randomly selects a profile picture for each user
 window.onload = async function () {
     arr = [
         '/static/images/player-icon1.png',
@@ -131,7 +145,7 @@ window.onload = async function () {
     document.getElementById('player2_avatar').src = arr[num]
 }
 
-
+//the three main buttons for rock, paper, scissors
 let current_choice = 0
 let locked_in = false
 $('#rock').on('click', function () {
@@ -164,6 +178,7 @@ $('#scissors').on('click', function () {
     current_choice = 'scissors'
 })
 
+//lock in answer with big green button
 $('#lock-in-choice').on('click', function () {
     if (current_choice === 0) {
         $('#flashed-message').remove()
