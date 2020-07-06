@@ -3,7 +3,6 @@ import hashlib
 import os
 
 
-salt = os.urandom(32)
 TABLE = 'users'
 
 def create_database_user(email=None,password=None,name=None):
@@ -31,7 +30,8 @@ class Database:
       password text,
       wins intiger,
       losses intiger,
-      id INTEGER PRIMARY KEY AUTOINCREMENT 
+      salt intiger,
+      id INTEGER PRIMARY KEY AUTOINCREMENT
     )"""
     with self.conn:
       self.cursor.execute(query)
@@ -41,14 +41,15 @@ class Database:
     type user: dictionary
     rtype: None
     '''
-    password = self._hash_password(user['password'])
-    data = (user['name'],user['email'],password,0,0,None)
+    salt = os.urandom(32)
+    password = self._hash_password(user['password'],salt)
+    data = (user['name'],user['email'],password,0,0,salt,None)
       
     with self.conn:
-      query = f'''INSERT INTO {TABLE} VALUES(?,?,?,?,?,?)'''
+      query = f'''INSERT INTO {TABLE} VALUES(?,?,?,?,?,?,?)'''
       self.cursor.execute(query,data)
   
-  def _hash_password(self,password):
+  def _hash_password(self,password,salt):
     '''
     type password: str
     rtype: str
@@ -93,14 +94,19 @@ class Database:
     type user: Dict
     rtype bool
     '''
-    password=self._hash_password(user['password'])
 
     with self.conn:
-      query = f'SELECT * FROM {TABLE} where email =:email AND password =:password'
-      self.cursor.execute(query,{'email':user['email'], 'password':password})
+      query = f"SELECT salt, password FROM {TABLE} WHERE email =:email"
 
-    value = self.cursor.fetchone()
-    return True if value else False
+      self.cursor.execute(query,{'email':user['email']})
+      info = self.cursor.fetchone()
+
+      key = info['password']
+      salt = info['salt']
+
+      new_key = self._hash_password(user['password'],salt)
+
+    return True if new_key==key else False
 
   def get_user_info(self, userInfo):
     '''
@@ -128,14 +134,14 @@ class Database:
 if __name__ == '__main__':
   c = Database()
   user = {
-    'name':'carl',
-    'email':'carl@gmail.com',
-    'password' : 'password123'
+    'name':'steve',
+    'email':'steve@gmail.com',
+    'password' : '123'
   }
-  #c.remove_user('stevewflores43@gmail.com')
+  #c.remove_user('josh@gmail.com')
   #c.insert_new_user(user)
   #print(c.get_user_info(user))
-  #print(c.validate_user(user))
+  print(c.validate_user(user))
   import pprint
   pprint.pprint(c.get_all_users())
   # print(c.get_all_users())
