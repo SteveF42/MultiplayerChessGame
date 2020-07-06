@@ -26,6 +26,10 @@ def room_message(msg):
 
 @socketio.on('play-game')
 def game_choice(move):
+    '''
+    type move: str
+    rtype: None
+    '''
     gameID = session[CLIENTGAMEKEY]['gameID']
     playerNum = session[CLIENTGAMEKEY]['playerNum']
     game = games[gameID]
@@ -35,9 +39,9 @@ def game_choice(move):
     if game.both_players_went():
         winner = game.winner()
         print(winner)
-        socketio.emit('player-choice',(playerNum,winner),room=gameID)
+        socketio.emit('player-choice',(playerNum,winner,move),room=gameID)
     else:
-        socketio.emit('player-choice',(playerNum,None),room=gameID)
+        socketio.emit('player-choice',(playerNum,None,move),room=gameID)
 
 
 @socketio.on('game-info')

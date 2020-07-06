@@ -23,9 +23,9 @@ def validateCharacters(info):
       return False
     if special_character.search(data):
       flash('Invalid Input','info')
-      return False    
-      
+      return False        
   return True
+
 
 @view.route('/')
 @view.route('/home')
@@ -66,10 +66,10 @@ def logout():
       pass
   return redirect(url_for('views.login'))
 
+
 @view.route('/register',methods=['POST','GET'])
 def register():
   db = Database()
-  print(db.get_all_users())
   if request.method=='POST':
     
     form = request.form
@@ -94,4 +94,3 @@ def register():
       return redirect(url_for('views.register'))
 
   return render_template('register.html')
-

@@ -141,7 +141,15 @@
     .choice:hover {
         background-color: rgb(71, 241, 65);
     }
-    
+    .gameInfo{
+        display: flex;
+    }
+    .playerScore{
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
 </style>
 
@@ -167,7 +175,15 @@
 <div class="container">
 
     <div class="gameInfo">
-
+        <div class="playerScore">
+            <p id="player1Score">0</p>
+        </div>
+        <img src="" alt="" id="player1Choice">
+        <img src="" alt="" id="player2Choice">
+        <div class="playerScore">
+            <p id="player2Score">0</p>
+            <img src="" alt="">
+        </div>
     </div>
     <div class="chat-game-grid">
         <div class="gameWindow" style="padding:10px 10px;">

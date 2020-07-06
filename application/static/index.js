@@ -1,8 +1,13 @@
-var socket = io('http://127.0.0.1:5000/')
-var private_socket = io('http://127.0.0.1:5000/private')
+const socket = io('http://127.0.0.1:5000/')
+const private_socket = io('http://127.0.0.1:5000/private')
 
 var playerNum = undefined
 var in_game = false
+const arr = [
+    '/static/images/player-icon1.png',
+    '/static/images/player-icon2.png',
+    '/static/images/player-icon3.png',
+]
 
 function HTML(msg, type) {
     let alert =
@@ -61,17 +66,43 @@ socket.on('client-game-setup', async function (playerNames) {
 
 
 //gets called after one player makes a move checks if theres a win or not too 
-socket.on('player-choice', function (ID,winner) {
+let player_move = {1:undefined,2:undefined}
+const choice_arr = {
+    'rock' : '/static/images/rock.png',
+    'paper' : '/static/images/paper.png',
+    'scissors' : '/static/images/scissors.png'
+}
+
+socket.on('player-choice', function (ID,winner,move) {
     let otherPlayerID = ID === 1 ? 'player1_avatar' : 'player2_avatar'
     document.getElementById(otherPlayerID).style.backgroundColor = 'rgb(71, 241, 65)'
+    player_move[ID] = move
 
     if(winner){
-        console.log("winner",winner)
+        console.log("winner",winner,'move',move,'ID',ID,player_move)
+
+        for(let i = 1; i <= 2;i++){
+            if(i===1){
+                document.getElementById('player1Choice').src = choice_arr[player_move[i]]
+            }else{
+                document.getElementById('player2Choice').src = choice_arr[player_move[i]]
+            }
+        }
+
+        let ss = 0
         switch(winner){
             case 1:
                 console.log('PLAYER 1 WINS')
+                ss = document.getElementById('player1Score').innerHTML
+                ss = parseInt(ss,10)
+                ss++;
+                document.getElementById('player1Score').innerHTML = ss;
                 break;
             case 2:
+                ss = document.getElementById('player1Score').innerHTML
+                ss = parseInt(ss,10)
+                ss++;
+                document.getElementById('player2Score').innerHTML = ss;
                 console.log('PLAYER 2 WINS')
                 break;
             case 3:
@@ -91,7 +122,6 @@ socket.on('received-message', msg => {
 //     socket.emit('stop-processes',function(){
 //     })
 // }
-
 
 
 //HTML events
@@ -132,11 +162,6 @@ $('#send-friendly-message').on('click', function () {
 
 //randomly selects a profile picture for each user
 window.onload = async function () {
-    arr = [
-        '/static/images/player-icon1.png',
-        '/static/images/player-icon2.png',
-        '/static/images/player-icon3.png',
-    ]
 
     let num = Math.floor(Math.random() * arr.length)
     document.getElementById('player1_avatar').src = arr[num]
