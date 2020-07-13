@@ -25,6 +25,33 @@ socket.on('connect', function () {
 
 })
 
+function printWinnerInChat(winner){
+
+    let msg = currentPlayers[winner-1] !== undefined ? `${currentPlayers[winner-1].toUpperCase()} WINS!` : "ITS A TIE!"
+    let tag = `<li>${msg}</li>`
+    let reset = `<li>Reseting game... </li>`
+    $('#game-messages').append(tag)
+    $('#game-messages').append(reset)
+}
+
+function startNextRound(){
+    console.log("reseting...")
+    //resets profile image background 
+    document.getElementById('player1_avatar').style.backgroundColor = 'rgb(0, 0, 0, 0)'
+    document.getElementById('player2_avatar').style.backgroundColor = 'rgb(0, 0, 0, 0)'
+    //changes the current choice back to nothing
+    document.getElementById('rock').style.backgroundColor = 'rgb(0,0,0,0)'
+    document.getElementById('paper').style.backgroundColor = 'rgb(0,0,0,0)'
+    document.getElementById('scissors').style.backgroundColor = 'rgb(0,0,0,0)'
+    //enables the submit button
+    document.getElementById('lock-in-choice').removeAttribute('disabled')
+    document.getElementById('lock-in-choice').innerHTML = "submit"
+
+    //resets all variables
+    player_move = {1:undefined,2:undefined}
+    locked_in = false
+    current_choice = 0
+}
 
 //after the other client disconnects, resets the server info and client info
 socket.on('force-end-game', function (name) {
@@ -42,6 +69,7 @@ socket.on('force-end-game', function (name) {
 
 
 //sets up client to play game
+let currentPlayers = []
 socket.on('client-game-setup', async function (playerNames) {
 
     $('#flash-message').append(HTML('Game Found!', 'danger'))
@@ -55,6 +83,7 @@ socket.on('client-game-setup', async function (playerNames) {
     $('#flashed-message').remove()
     $('#findGame').text('Find Game')
 
+    currentPlayers = playerNames
     let p1_name = playerNames[0]
     let p2_name = playerNames[1]
 
@@ -77,7 +106,7 @@ socket.on('player-choice', function (ID,winner,move) {
     let otherPlayerID = ID === 1 ? 'player1_avatar' : 'player2_avatar'
     document.getElementById(otherPlayerID).style.backgroundColor = 'rgb(71, 241, 65)'
     player_move[ID] = move
-
+    
     if(winner){
         console.log("winner",winner,'move',move,'ID',ID,player_move)
 
@@ -99,20 +128,22 @@ socket.on('player-choice', function (ID,winner,move) {
                 document.getElementById('player1Score').innerHTML = ss;
                 break;
             case 2:
+                console.log('PLAYER 2 WINS')
                 ss = document.getElementById('player1Score').innerHTML
                 ss = parseInt(ss,10)
                 ss++;
                 document.getElementById('player2Score').innerHTML = ss;
-                console.log('PLAYER 2 WINS')
                 break;
             case 3:
                 console.log('ITS A TIE')
                 break;  
         }
+        printWinnerInChat(winner)
+        setTimeout(()=>startNextRound(),5000)
     }
 })
 
-//chat window 
+//chat window stuff
 socket.on('received-message', msg => {
     let tag = `<li style="margin-top:0; list-style: none" id="client-message">${msg['name']}: ${msg['message']}</li>`
     $('#game-messages').append(tag)
@@ -209,13 +240,14 @@ $('#lock-in-choice').on('click', function () {
         $('#flashed-message').remove()
         let s = HTML('select a choice', 'danger')
         $('#error').append(s)
-        return
+    }else{
+
+        $('#flashed-message').remove()
+        
+        document.getElementById('lock-in-choice').setAttribute('disabled', 'disabled')
+        document.getElementById('lock-in-choice').innerHTML = "WAITING FOR OPPONENT"
+        locked_in = true
+        
+        socket.emit('play-game', current_choice)
     }
-    $('#flashed-message').remove()
-
-    document.getElementById('lock-in-choice').setAttribute('disabled', 'disabled')
-    document.getElementById('lock-in-choice').innerHTML = "WAITING FOR OPPONENT"
-    locked_in = true
-
-    socket.emit('play-game', current_choice)
 })

@@ -147,4 +147,3 @@ if __name__ == '__main__':
   # print(c.get_all_users())
   # vals = ['wins','losses']
   # c.update_data(vals)
-      

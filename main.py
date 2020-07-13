@@ -35,11 +35,12 @@ def game_choice(move):
     game = games[gameID]
 
     game.set_player_move(playerNum-1,move)
-
+    
     if game.both_players_went():
         winner = game.winner()
-        print(winner)
+        
         socketio.emit('player-choice',(playerNum,winner,move),room=gameID)
+        game.reset()
     else:
         socketio.emit('player-choice',(playerNum,None,move),room=gameID)
 

@@ -65,6 +65,7 @@ class Game:
     
     def reset(self):
         self.player1Went = False
-        self.player1Went = False
+        self.player2Went = False
+        self.playermoves = [None,None]
     
     
